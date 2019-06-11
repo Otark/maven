@@ -2,7 +2,7 @@ pipeline {
   agent {
     node {
       label 'maven'
-      customWorkspace "${JENKINS_HOME}/workspace/${JOB_NAME}/${BUILD_NUMBER}"
+      customWorkspace " /var/lib/jenkins/workspace/${JOB_NAME}/${BUILD_NUMBER}"
     }
   }
   options {
@@ -81,18 +81,20 @@ pipeline {
     }
     stage ('Run tests') {
       steps {
-        try {
-          junit 'target/surefire-reports/**/*.xml'
-        }
-        catch(err){
-          currentBuild.result = 'UNSTABLE'
+        script {
+          try {
+            junit 'target/surefire-reports/**/*.xml'
+          }
+          catch(err){
+            currentBuild.result = 'UNSTABLE'
+          }
         }
       }
     }
     stage ('Push artifacts') {
       steps {
         withCredentials([[$class: 'UsernamePasswordMultiBinding', credentialsId: 'NexusPassword', usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD']]) {
-          sh "curl -u ${USERNAME}:${PASSWORD} -X PUT -T ${JENKINS_HOME}/workspace/${JOB_NAME}/${BUILD_NUMBER}/target/java-maven-junit-helloworld-2.0-SNAPSHOT.jar http://${params.nexus}/repository/test_repo/"
+          sh "curl -u ${USERNAME}:${PASSWORD} -X PUT -T  /var/lib/jenkins/workspace/${JOB_NAME}/${BUILD_NUMBER}/target/java-maven-junit-helloworld-2.0-SNAPSHOT.jar http://${params.nexus}/repository/test_repo/"
         }
       //  nexusArtifactUploader artifacts: [[artifactId: 'test_maven', classifier: '', file: '${JENKINS_HOME}/workspace/${JOB_NAME}/${BUILD_NUMBER}/target/java-maven-junit-helloworld-2.0-SNAPSHOT.jar', type: 'jar']], credentialsId: 'localNexus', groupId: 'pipelinaArtifacts', nexusUrl: params.nexus, nexusVersion: 'nexus3', protocol: 'http', repository: 'maven-releases/', version: "${BUILD_NUMBER}"
       }
