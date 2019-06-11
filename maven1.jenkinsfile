@@ -15,7 +15,7 @@ pipeline {
   parameters {
     string(defaultValue: "localhost:8081", description: 'Nexus url', name: 'nexus')
     string(defaultValue: "", description: 'Email for sending report. Must be defined.', name: 'requesterEmail')
-    string(defaultValue: 'https://github.com/nikolinho/jenkins_first_pipeline.git', description: 'Git url for build', name: 'gitUrl')
+    string(defaultValue: 'git@github.com:Otark/maven.git', description: 'Git url for build', name: 'gitUrl')
   }
   stages {
 /*
